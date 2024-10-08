@@ -1,0 +1,87 @@
+﻿@model BusinessObjects.Models.Student
+
+<h2>Student Details</h2>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <table class="table table-striped">
+                <tr>
+                    <th>Student ID</th>
+                    <td>@Model.StudentId</td>
+                </tr>
+                <tr>
+                    <th>Student Code</th>
+                    <td>
+                        @{
+                            // Lấy tên khoa từ đối tượng student
+                            string departmentName = Model.Department.DepartmentName;
+
+                            // Xử lý để lấy chữ cái đầu tiên của tên khoa
+                            string departmentCode = "";
+                            if (!string.IsNullOrWhiteSpace(departmentName))
+                            {
+                                // Chia tên khoa thành các từ
+                                var words = departmentName.Split(' ');
+
+                                // Lấy chữ cái đầu tiên của từ đầu tiên
+                                departmentCode += words[0][0];
+
+                                // Nếu có từ thứ hai, lấy chữ cái đầu tiên của từ đó
+                                if (words.Length > 1)
+                                {
+                                    departmentCode += words[1][0];
+                                }
+                            }
+
+            // Chỉ cần hiển thị mã khoa và mã sinh viên
+                            @departmentCode @Model.StudentCode.ToString("D5")
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <th>Full Name</th>
+                    <td>@Model.FullName</td>
+                </tr>
+                <tr>
+                    <th>Date of Birth</th>
+                    <td>@Model.DateOfBirth?.ToString("dd-MM-yyyy")</td>
+                </tr>
+                <tr>
+                    <th>Gender</th>
+                    <td>@Model.Gender</td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td>@Model.Email</td>
+                </tr>
+                <tr>
+                    <th>Password</th>
+                    <td>@Model.Password</td>
+                </tr>
+                <tr>
+                    <th>Phone Number</th>
+                    <td>@Model.PhoneNumber</td>
+                </tr>
+                <tr>
+                    <th>Phone Address</th>
+                    <td>@Model.Address</td>
+                </tr>
+                <tr>
+                    <th>Department</th>
+                    <td>@Model.Department.DepartmentName</td>
+                </tr>
+                <tr>
+                    <th>CreatedAt</th>
+                    <td>@Model.CreatedAt</td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-md-4">
+            <img src="~/image/avatar/@Model.Avatar" class="img-fluid" alt="Student Avatar" />
+        </div>
+    </div>
+</div>
+
+
+<a asp-controller="Student" asp-action="Index" class="btn btn-secondary">Back to List</a>
