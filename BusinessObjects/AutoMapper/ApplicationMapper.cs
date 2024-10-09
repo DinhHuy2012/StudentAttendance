@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using BusinessObjects.DTO;
+using BusinessObjects.DTO.ClassDTO;
+using BusinessObjects.DTO.ClassDTO.ClassDTO;
 using BusinessObjects.DTO.EnrollmentDto;
 using BusinessObjects.DTO.StudentDTO;
 using BusinessObjects.Models;
-
 
 
 namespace StudentAttendance.AutoMapper
@@ -12,7 +12,7 @@ namespace StudentAttendance.AutoMapper
     {
         public ApplicationMapper()
         {
-            CreateMap<Class, ClassDTO>()
+            CreateMap<Class, ClassesDTO>()
 
                 .ForMember(dest => dest.StudentNames, otp => otp.MapFrom(src => src.Enrollments.Select(e => new StudentsDTO
                 {
@@ -31,6 +31,11 @@ namespace StudentAttendance.AutoMapper
                .ReverseMap();
             CreateMap<Enrollment, EnrollmentDTO>()
               .ReverseMap();
+
+            CreateMap<Class, AllClassDTO>()
+                .ReverseMap();
+            CreateMap<Class, AddClassDTO>()
+                .ReverseMap();
         }
     }
 }

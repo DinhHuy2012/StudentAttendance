@@ -1,0 +1,182 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model IEnumerable<BusinessObjects.Models.Class>
+
+
+
+
+@{
+    ViewData["Title"] = "Class List";
+}
+<h1>Class List</h1>
+<div class="d-flex align-items-center mb-3">
+    <a asp-controller="Class" asp-action="Create" class="btn btn-primary me-2">Create Class</a>
+
+ 
+    <form method="post" asp-action="Index" class="d-flex align-items-center" style="padding-left:50px">
+        <label for="Search" class="me-2">Search by ClassCode , ClassName :</label>
+        <input name="searchString" type="text" />
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+</div>
+
+
+
+
+<table class="classes-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>ClassCode</th>
+            <th>ClassName</th>
+            <th>Note</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var classes in Model)
+        {
+            <tr>
+                <td>@classes.ClassId</td>
+              
+                <td>@classes.ClassCode</td>
+                <td>@classes.ClassName</td>
+                <td>@classes.Note</td>
+                <td class="actions">
+                    <a asp-controller="classes" asp-action="Details" asp-route-id="@classes.ClassId" class="btn btn-info">Details</a>
+                    <a asp-controller="classes" asp-action="Edit" asp-route-id="@classes.ClassId" class="btn btn-warning">Edit</a>
+                    <a class="btn btn-danger" href="@Url.Action("Delete", new { id = classes.ClassId })"
+                       onclick="return confirm('Are you sure you want to delete this classes?')">
+                        Delete
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+<nav aria-label="Page navigation" class="text-center">
+    <ul class="pagination justify-content-center">
+        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+        {
+            <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                <a class="page-link" asp-action="Index" asp-route-currentPage="@i">@i</a>
+            </li>
+        }
+    </ul>
+</nav>
+
+<style>
+
+
+    .classes-table {
+        width: 100%; /* Đặt chiều rộng của bảng 100% */
+        border-collapse: collapse; /* Gộp viền giữa các ô lại với nhau */
+        margin: 20px 0; /* Khoảng cách trên và dưới bảng */
+        font-size: 16px; /* Kích thước font chữ */
+        font-family: Arial, sans-serif; /* Font chữ */
+    }
+
+        .classes-table thead {
+            background-color: #007bff; /* Màu nền cho tiêu đề */
+            color: white; /* Màu chữ cho tiêu đề */
+        }
+
+        .classes-table th,
+        .classes-table td {
+            padding: 12px; /* Padding cho ô */
+            text-align: left; /* Căn trái cho nội dung ô */
+            border: 1px solid #dddddd; /* Viền cho ô */
+        }
+
+        .classes-table tbody tr:nth-child(even) {
+            background-color: #f2f2f2; /* Màu nền cho các hàng chẵn */
+        }
+
+        .classes-table tbody tr:hover {
+            background-color: #e0e0e0; /* Màu nền khi hover qua hàng */
+        }
+
+    .actions {
+        display: flex; /* Sử dụng flexbox để căn chỉnh các nút hành động */
+        gap: 10px; /* Khoảng cách giữa các nút */
+    }
+
+    .btn {
+        padding: 8px 12px; /* Padding cho nút */
+        border: none; /* Không có viền */
+        border-radius: 4px; /* Bo góc cho nút */
+        cursor: pointer; /* Thay đổi con trỏ khi hover qua nút */
+    }
+
+    .btn-info {
+        background-color: #17a2b8; /* Màu nền cho nút "Details" */
+        color: white; /* Màu chữ cho nút "Details" */
+    }
+
+    .btn-warning {
+        background-color: #ffc107; /* Màu nền cho nút "Edit" */
+        color: black; /* Màu chữ cho nút "Edit" */
+    }
+
+    .btn-danger {
+        background-color: #dc3545; /* Màu nền cho nút "Delete" */
+        color: white; /* Màu chữ cho nút "Delete" */
+    }
+
+    .btn:hover {
+        opacity: 0.9; /* Hiệu ứng mờ khi hover qua nút */
+    }
+
+
+
+
+    .pagination {
+        margin: 20px 0; /* Khoảng cách giữa phân trang và bảng */
+    }
+
+    .page-item {
+        margin: 0 5px; /* Khoảng cách giữa các nút phân trang */
+    }
+
+    .page-link {
+        color: #007bff; /* Màu chữ cho nút phân trang */
+        text-decoration: none; /* Bỏ gạch chân */
+        padding: 10px 15px; /* Padding cho nút phân trang */
+        border: 1px solid #007bff; /* Viền cho nút phân trang */
+        border-radius: 5px; /* Bo góc */
+        transition: background-color 0.3s, color 0.3s; /* Hiệu ứng chuyển động */
+    }
+
+        .page-link:hover {
+            background-color: #007bff; /* Màu nền khi hover */
+            color: white; /* Màu chữ khi hover */
+        }
+
+    .active .page-link {
+        background-color: #007bff; /* Màu nền cho trang đang chọn */
+        color: white; /* Màu chữ cho trang đang chọn */
+        border-color: #007bff; /* Viền cho trang đang chọn */
+    }
+
+    .text-center {
+        text-align: center; /* Căn giữa nội dung */
+    }
+
+</style>
+
+<script src="~/lib/signalr/signalr.js"></script>
+<script>
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/SignalHub")
+        .build();
+
+    connection.on("ReceiveUpdate", function () {
+        // Gọi lại phương thức Index để tải lại dữ liệu
+        location.reload();
+    });
+
+    connection.start().catch(function (err) {
+        return console.error(err.toString());
+    });
+</script>
