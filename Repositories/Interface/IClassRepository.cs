@@ -7,13 +7,14 @@ using System.Threading.Tasks;
 
 namespace Repositories.Interface
 {
-	public interface IClassRepository
-	{
-		Task<Class?> GetClassByIdAsync(int id);
-		Task<List<Class>> GetAllClassesAsync();
+    public interface IClassRepository
+    {
+        Task<Class?> GetClassByIdAsync(int id);
+        Task<List<Class>> GetAllClassesAsync();
 
-		Task AddClassAsync(Class newClass);
-		Task UpdateClassAsync(Class updatedClass);
-		Task DeleteClassAsync(int id);
-	}
+        Task AddClassAsync(Class newClass);
+        Task UpdateClassAsync(Class updatedClass);
+        Task DeleteClassAsync(int id);
+       Task<Class?> GetClassByClassCodeAsync(string ClassCode);
+    }
 }
