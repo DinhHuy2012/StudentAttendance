@@ -62,7 +62,12 @@ namespace Repositories.Repository
         {
 			return await _studentDao.GetMaxStudentCodeAsync();
         }
+        public async Task<List<Student>> SearchStudents(string q)
+        {
+            // Tìm sinh viên theo tên
+           return await _studentDao.SearchStudents(q);
+        }
 
-      
+
     }
 }

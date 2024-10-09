@@ -1,4 +1,5 @@
 ﻿using BusinessObjects.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -121,5 +122,15 @@ namespace DataAccess.DAO
                 .Select(s => s.StudentCode) // Chọn mã sinh viên
                 .FirstOrDefaultAsync(); // Lấy mã lớn nhất
         }
+        public async Task<List<Student>> SearchStudents(string q)
+        {
+            // Tìm sinh viên theo tên
+            var students = await _context.Students
+                .Where(s => s.FullName.Contains(q))  // Tìm kiếm theo tên sinh viên
+                .ToListAsync();  // Trả về danh sách đầy đủ các thuộc tính của Student
+
+            return students;
+        }
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using BusinessObjects.Models;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -15,5 +16,7 @@ namespace Repositories.Interface
 		Task<Student?> GetStudentByEmailAsync(string email);
 		Task<Department?> GetDepartmentByIdAsync(int departmentId);
 		Task<int> GetMaxStudentCodeAsync();
-	}
+		Task<List<Student>> SearchStudents(string q);
+
+    }
 }

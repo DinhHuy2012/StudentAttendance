@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BusinessObjects.DTO;
+using BusinessObjects.DTO.EnrollmentDto;
 using BusinessObjects.DTO.StudentDTO;
 using BusinessObjects.Models;
 
@@ -28,7 +29,8 @@ namespace StudentAttendance.AutoMapper
                 .ReverseMap();
             CreateMap<Student, UpdateStudentDTO>()
                .ReverseMap();
-
+            CreateMap<Enrollment, EnrollmentDTO>()
+              .ReverseMap();
         }
     }
 }

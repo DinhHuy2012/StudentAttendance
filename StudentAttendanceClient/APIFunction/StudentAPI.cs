@@ -32,6 +32,31 @@ namespace StudentAttendanceClient.APIFunction
                 return new List<StudentsDTO>();
             }
         }
+        public static async Task<List<Student>> GetSearchStudent(string search)
+        {
+            // Sử dụng chuỗi định dạng để chèn tham số search
+            string url = $"http://localhost:5019/api/Student/search?searchString={Uri.EscapeDataString(search)}";
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync(url);
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadFromJsonAsync<List<Student>>();
+                }
+                else
+                {
+                    // Log or handle response error
+                    Console.WriteLine("API Error: " + response.ReasonPhrase);
+                    return new List<Student>();
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                // Log HTTP request error
+                Console.WriteLine("HTTP Request Error: " + ex.Message);
+                return new List<Student>();
+            }
+        }
 
         public static async Task<int> GetMaxStudentCodeAsync()
         {

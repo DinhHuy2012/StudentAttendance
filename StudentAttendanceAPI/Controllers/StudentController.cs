@@ -202,7 +202,29 @@ namespace StudentAttendanceAPI.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchStudents(string searchString)
+        {
+          
 
+            try
+            {
+                if (string.IsNullOrWhiteSpace(searchString))
+                {
+                    return BadRequest("Search query cannot be empty.");
+                }
+                var students = await _studentRepository.SearchStudents(searchString);
+
+                return Ok(students);
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+
+        }
 
     }
 
