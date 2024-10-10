@@ -15,7 +15,5 @@ namespace BusinessObjects.DTO.ClassDTO
         public string ClassName { get; set; } = null!;
         public string? Note { get; set; }
         public List<StudentsDTO> StudentNames { get; set; } = new List<StudentsDTO>();
-
-
     }
 }

@@ -1,4 +1,5 @@
-﻿using BusinessObjects.DTO.StudentDTO;
+﻿using BusinessObjects.DTO.ClassDTO;
+using BusinessObjects.DTO.StudentDTO;
 using BusinessObjects.Models;
 
 namespace StudentAttendanceClient.APIFunction
@@ -30,5 +31,6 @@ namespace StudentAttendanceClient.APIFunction
                 return new List<Department>();
             }
         }
+      
     }
 }

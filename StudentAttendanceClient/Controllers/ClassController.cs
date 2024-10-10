@@ -21,17 +21,13 @@ namespace StudentAttendanceClient.Controllers
             this.mapper = mapper;
         }
 
-
+        [HttpGet]
         public async Task<IActionResult> Index( int currentPage = 1, int pageSize = 5)
         {
             // Lấy danh sách sinh viên từ API dưới dạng DTO
             var classes = await ClassAPI.GetListClassAsync();
 
-            // Ánh xạ từ StudentDTOs sang đối tượng Student
-
-            // Lấy danh sách phòng ban từ API
-         
-
+                
             // Tính toán số trang
             var totalClass = classes.Count();
             var totalPages = (int)Math.Ceiling(totalClass / (double)pageSize);
@@ -42,9 +38,27 @@ namespace StudentAttendanceClient.Controllers
             // Lưu thông tin phân trang vào ViewBag
             ViewBag.CurrentPage = currentPage;
             ViewBag.TotalPages = totalPages;
-
             // Trả về View với danh sách sinh viên đã phân trang
             return View(pagedClasses);
         }
+
+        public async Task<IActionResult> Details(int id)
+        {
+            // Lấy thông tin sinh viên từ API
+            var studentDTO = await ClassAPI.GetClassByIdAsync(id); // Đảm bảo bạn đang nhận về đúng kiểu dữ liệu
+
+            if (studentDTO == null)
+            {
+                return NotFound(); // Trả về 404 nếu không tìm thấy sinh viên
+            }
+
+            // Ánh xạ từ StudentDTO sang StudentDetailViewModel
+/*            var studentDetail = mapper.Map<Student>(studentDTO);
+*/
+            // Trả về View với thông tin chi tiết sinh viên
+            return View(studentDTO);
+        }
+
+
     }
 }

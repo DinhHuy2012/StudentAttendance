@@ -1,0 +1,126 @@
+﻿@model BusinessObjects.DTO.ClassDTO.ClassesDTO
+
+@{
+    var index = 1; // Bắt đầu từ 1
+}
+
+<h2>ClassCode: @Model.ClassCode</h2>
+<a asp-controller="Enrollment" asp-action="AddMember" asp-route-id="@Model.ClassId" class="btn btn-info">AddStudents</a>
+<a asp-controller="Enrollment" asp-action="ExportToExcel" asp-route-id="@Model.ClassId" class="btn btn-success">Export to Excel</a>
+<a asp-controller="Class" asp-action="Index" class="btn btn-secondary">Back to List</a>
+
+
+<table style="margin-top:20px;">
+    <thead>
+        <tr>
+            <th>INDEX</th>
+            <th>IMAGE</th>
+            <th>CODE</th>
+            <th>EMAIL</th>
+            <th>FullName</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var s in Model.StudentNames)
+        {
+            <tr>
+
+                <td>@index</td> <!-- Hiển thị giá trị index -->
+                @if(s.Avatar == null)
+                {
+                    <td> <img src="~/image/avatar/no-image.jpg" alt="no-image.jpg" /></td>
+                }
+                else
+                {
+
+                    <td> <img src="~/image/avatar/@s.Avatar" alt="@s.Avatar" /></td>
+
+                }
+                <td>
+                    @{
+                        // Lấy tên khoa từ đối tượng student
+                        string departmentName = s.DepartmentName;
+
+                        // Xử lý để lấy chữ cái đầu tiên của tên khoa
+                        string departmentCode = "";
+                        if (!string.IsNullOrWhiteSpace(departmentName))
+                        {
+                            // Chia tên khoa thành các từ
+                            var words = departmentName.Split(' ');
+
+                            // Lấy chữ cái đầu tiên của từ đầu tiên
+                            departmentCode += words[0][0];
+
+                            // Nếu có từ thứ hai, lấy chữ cái đầu tiên của từ đó
+                            if (words.Length > 1)
+                            {
+                                departmentCode += words[1][0];
+                            }
+                        }
+
+                        // Chỉ cần hiển thị mã khoa và mã sinh viên
+                        @departmentCode @s.StudentCode.ToString("D5")
+                    }
+                </td>
+                <td>@s.Email</td>
+                <td><a href="/Student/Details/@s.StudentId">@s.FullName</a> </td>
+
+            </tr>
+            index++;
+            <!-- Tăng giá trị index sau mỗi lần lặp -->
+        }
+
+      
+    </tbody>
+</table>
+
+
+
+<style>
+
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed; /* Cố định kích thước cột */
+        text-align: left;
+    }
+
+    thead {
+        background-color: #4a79cb;
+        color: white;
+    }
+
+    th, td {
+        padding: 12px;
+        border-bottom: 1px solid #ddd;
+        vertical-align: middle;
+    }
+
+    th {
+        width: 25%; /* Chia đều không gian cho các cột */
+    }
+
+    td {
+    }
+
+    img {
+        width: 80px;
+        height: auto;
+        border-radius: 5px;
+    }
+
+    tbody tr:nth-child(odd) {
+        background-color: #f9f9f9;
+    }
+
+    tbody tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    tbody tr:hover {
+        background-color: #d1e0f7;
+    }
+
+
+</style>

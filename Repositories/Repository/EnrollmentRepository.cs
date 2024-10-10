@@ -32,6 +32,9 @@ namespace Repositories.Repository
         {
             return await _enrollmentDao.GetEnrollmentByClassAndStudentAsync(classId, studentId);
         }
-
+        public async Task<Enrollment?> GetEnrollmentByClassAsync(int classId)
+        {
+            return await _enrollmentDao.GetEnrollmentByClassAsync(classId);
+        }
     }
 }

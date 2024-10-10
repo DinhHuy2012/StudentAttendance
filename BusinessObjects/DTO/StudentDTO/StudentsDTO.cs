@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BusinessObjects.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ namespace BusinessObjects.DTO.StudentDTO
 {
     public class StudentsDTO
     {
-
+       
         public int StudentId { get; set; }
         public int StudentCode { get; set; }
         public string DepartmentName { get; set; }

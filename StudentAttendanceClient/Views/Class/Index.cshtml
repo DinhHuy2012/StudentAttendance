@@ -37,17 +37,21 @@
         {
             <tr>
                 <td>@classes.ClassId</td>
-              
-                <td>@classes.ClassCode</td>
+                <td>
+                    <a asp-controller="Class" asp-action="Details" asp-route-id="@classes.ClassId" >@classes.ClassCode</a>
+                </td>
                 <td>@classes.ClassName</td>
                 <td>@classes.Note</td>
                 <td class="actions">
-                    <a asp-controller="classes" asp-action="Details" asp-route-id="@classes.ClassId" class="btn btn-info">Details</a>
-                    <a asp-controller="classes" asp-action="Edit" asp-route-id="@classes.ClassId" class="btn btn-warning">Edit</a>
+                    <a asp-controller="Class" asp-action="Details" asp-route-id="@classes.ClassId" class="btn btn-info">Details</a>
+                    <a asp-controller="Class" asp-action="Edit" asp-route-id="@classes.ClassId" class="btn btn-warning">Edit</a>
+                    <a asp-controller="Enrollment" asp-action="Index" asp-route-id="@classes.ClassId" class="btn btn-info">AddStudents</a>
+
                     <a class="btn btn-danger" href="@Url.Action("Delete", new { id = classes.ClassId })"
                        onclick="return confirm('Are you sure you want to delete this classes?')">
                         Delete
                     </a>
+
                 </td>
             </tr>
         }

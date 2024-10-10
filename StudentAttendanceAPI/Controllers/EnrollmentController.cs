@@ -34,9 +34,17 @@ namespace StudentAttendanceAPI.Controllers
 
             return Ok(result);
         }
-        [HttpPost("AddStudentsToClass")]
+        [HttpPost("AddStudentsToClass/{classId}")]
         public async Task<IActionResult> AddStudentsToClass(int classId, List<int> studentIds)
         {
+            if (classId == null)
+            {
+                NotFound();
+            }
+            if (studentIds == null || !studentIds.Any())
+            {
+                return BadRequest("No student IDs provided.");
+            }
             var enrollments = new List<Enrollment>();
 
             foreach (var studentId in studentIds)

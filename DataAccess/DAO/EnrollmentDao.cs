@@ -28,6 +28,11 @@ namespace DataAccess.DAO
             return await _context.Enrollments
                 .FirstOrDefaultAsync(e => e.ClassId == classId && e.StudentId == studentId);
         }
+        public async Task<Enrollment?> GetEnrollmentByClassAsync(int classId)
+        {
+            return await _context.Enrollments
+                .FirstOrDefaultAsync(e => e.ClassId == classId);
+        }
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();

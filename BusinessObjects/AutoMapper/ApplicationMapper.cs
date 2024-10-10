@@ -18,7 +18,11 @@ namespace StudentAttendance.AutoMapper
                 {
                     StudentId = e.Student.StudentId,  // Mã sinh viên
                     StudentCode = e.Student.StudentCode,  // Mã sinh viên
-                    FullName = e.Student.FullName     // Tên sinh viên
+                    FullName = e.Student.FullName  ,   // Tên sinh viên
+                    Avatar = e.Student.Avatar,
+                    Email = e.Student.Email,
+                    DepartmentName = e.Student.Department.DepartmentName
+
                 }).ToList())) // Lấy danh sách tên sinh viên
 
             .ReverseMap();

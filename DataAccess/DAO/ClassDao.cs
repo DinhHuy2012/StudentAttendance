@@ -21,6 +21,8 @@ namespace DataAccess.DAO
             return await _context.Classes
                 .Include(x => x.Enrollments)  // Include Enrollments
                 .ThenInclude(e => e.Student)  // Include Student through Enrollments
+                .ThenInclude(s => s.Department)
+
                 .FirstOrDefaultAsync(x => x.ClassId == id);  // Lọc theo ClassId
         }
         public async Task<List<Class>> GetAllClassesAsync()

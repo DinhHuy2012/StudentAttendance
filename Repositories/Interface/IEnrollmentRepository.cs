@@ -11,6 +11,7 @@ namespace Repositories.Interface
     {
         Task AddEnrollmentsAsync(List<Enrollment> enrollments);
         Task<Enrollment?> GetEnrollmentByClassAndStudentAsync(int classId, int studentId);
+        Task<Enrollment?> GetEnrollmentByClassAsync(int classId);
         Task SaveChangesAsync();
 
     }
