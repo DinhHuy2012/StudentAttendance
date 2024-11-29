@@ -22,7 +22,14 @@ builder.Services.AddDbContext<StudentAttendanceDBContext>(options =>
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<IClassRepository, ClassRepository>();
 builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
+builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
+builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
+builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
+
 builder.Services.AddScoped<StudentDao>();
+builder.Services.AddScoped<TeacherDao>();
+builder.Services.AddScoped<AttendanceDao>();
+builder.Services.AddScoped<ScheduleDao>();
 builder.Services.AddScoped<EnrollmentDao>();
 builder.Services.AddScoped <ClassDao>();
 builder.Services.AddScoped<AuthDao>();

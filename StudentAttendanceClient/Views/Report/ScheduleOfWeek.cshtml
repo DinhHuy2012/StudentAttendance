@@ -1,0 +1,156 @@
+﻿@model IEnumerable<BusinessObjects.DTO.ReportDTO.ClassSchedule>
+
+@{
+    ViewData["Title"] = "Lịch Học Tuần";
+    var studentId = Context.Session.GetString("StudentId");
+    var FullName = Context.Session.GetString("FullName");
+    var StudentCode = Context.Session.GetString("StudentCode");
+    var initials = GetInitials(FullName);
+    @functions {
+        public string GetStatusClass(string attendanceStatus)
+        {
+            return attendanceStatus switch
+            {
+                "Present" => "btn btn-success", // Bootstrap class for success (green)
+                "Absent" => "btn btn-danger",   // Bootstrap class for danger (red)
+                "Future" => "btn btn-warning",  // Bootstrap class for warning (yellow)
+                _ => ""
+            };
+        }
+    }
+}
+
+
+<a class="btn btn-success" href="/Home/Index">Home - <b>ScheduleOfWeek</b></a>
+
+<h2>
+    Activities for @initials (@FullName)
+
+</h2>
+<p>
+    <b>Note:</b> These activities do not include extra-curriculum activities, such as club activities ...<br />
+
+    <b>Chú thích:</b> Các hoạt động trong bảng dưới không bao gồm hoạt động ngoại khóa, ví dụ như hoạt động câu lạc bộ ...<br />
+
+    Các phòng bắt đầu bằng AL thuộc tòa nhà Alpha. VD: AL...<br />
+    Các phòng bắt đầu bằng BE thuộc tòa nhà Beta. VD: BE,..<br />
+    Các phòng bắt đầu bằng GA thuộc tòa nhà Gamma. VD: G201,...<br />
+    Các phòng tập bằng đầu bằng R thuộc khu vực sân tập Vovinam.<br />
+    Các phòng bắt đầu bằng DE thuộc tòa nhà Delta. VD: DE,..<br />
+</p>
+<div>
+    <a href="@Url.Action("ScheduleOfWeek", new { filterType = "today" })" class="btn btn-primary">Hôm Nay</a>
+    <a href="@Url.Action("ScheduleOfWeek", new { filterType = "thisweek" })" class="btn btn-primary">Tuần Này</a>
+    <a href="@Url.Action("ScheduleOfWeek")" class="btn btn-secondary">Tất Cả</a>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Ngày</th>
+            <th>Mã Lớp</th>
+            <th>Môn Học</th>
+            <th>Giáo Viên</th>
+            <th>Thời Gian</th>
+            <th>Phòng Học</th>
+            <th>Trạng Thái Điểm Danh</th>
+            <th>Ghi Chú</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model == null)
+        {
+            <p>Không có lịch học !</p>
+        }
+        else
+        { @foreach (var schedule in Model)
+            {
+                var dayOfWeek = schedule.Date.ToString("dddd", new System.Globalization.CultureInfo("vi-VN"));
+                <tr>
+                    <td>
+                        <a style="font-size:12px" class="btn btn-success">
+                            @dayOfWeek
+                            @schedule.Date.ToString("dd/MM/yyyy")
+                        </a>
+                    </td>
+                    <td>@schedule.ClassCode</td>
+                    <td>@schedule.CourseCode</td>
+                    <td>@schedule.TeacherName</td>
+                    <td style="text-align:center">
+                        <a style="font-size:12px" class="btn btn-danger">@schedule.TimeSlotID _ (@schedule.StartTime.ToString(@"hh\:mm")-@schedule.EndTime.ToString(@"hh\:mm"))</a>
+                    </td>
+                    <td>@schedule.Room</td>
+                    <td><a style="font-size:12px" class="@GetStatusClass(schedule.AttendanceStatus)">@schedule.AttendanceStatus</a></td>
+                    <td>@schedule.Note</td>
+                </tr>
+            }
+
+        }
+
+    </tbody>
+</table>
+<h6>
+    <b>
+        More note / Chú thích thêm:
+    </b>
+</h6>
+
+<p style="color: green;">
+    <strong>(attended)</strong>: @FullName had attended this activity / @FullName đã tham gia hoạt động này
+</p>
+
+<p style="color: red;">
+    <strong>(absent)</strong>: @FullName had NOT attended this activity / @FullName đã vắng mặt buổi này
+</p>
+
+<style>
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .table th, .table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        .table th {
+            background-color: #f2f2f2;
+            text-align: left;
+        }
+
+</style>
+
+@functions {
+    public string GetInitials(string fullName)
+    {
+        if (string.IsNullOrWhiteSpace(fullName))
+        {
+            return string.Empty;
+        }
+
+        // Tách tên thành các phần
+        var nameParts = fullName.Split(' ');
+
+        // Danh sách để lưu các chữ cái đầu tiên
+        var initials = new List<string>();
+
+        // Lấy chữ cái đầu tiên của mỗi phần tên
+        foreach (var part in nameParts)
+        {
+            if (!string.IsNullOrWhiteSpace(part)) // Kiểm tra nếu phần tên không rỗng
+            {
+                initials.Add(part.Substring(0, 1).ToUpper()); // Thêm chữ cái đầu tiên, viết hoa
+            }
+        }
+
+        // Nếu có ít nhất 2 phần tên, ghép chữ cái đầu tiên của tên cuối với các chữ cái đầu tiên của các tên trước
+        if (initials.Count > 1)
+        {
+            return initials.Last() + string.Join("", initials.Take(initials.Count - 1));
+        }
+
+        // Trường hợp chỉ có một phần tên
+        return initials.First();
+    }
+}

@@ -1,0 +1,130 @@
+﻿@model List<BusinessObjects.DTO.ScheduleDTO.ScheduleListDTO>
+
+@{
+    var datetime = DateTime.Now.ToString("dd/MM/yyyy");
+    var timenow = DateTime.Now.ToString("HH:mm:ss");
+}
+<div class="container-fluid">
+    <!-- Bắt đầu của container-fluid -->
+    <a class="btn btn-success" href="/Home/Index">Home - <b>Attendance</b></a>
+    <h1>Today activity (@datetime)</h1>
+    <div>
+        <a href="@Url.Action("TakeAttendance", new { filterType = "today" })" class="btn btn-primary">Hôm Nay</a>
+        <a href="@Url.Action("TakeAttendance", new { filterType = "2daysbefore" })" class="btn btn-primary">Take/Edit Attendance 2 days before</a>
+    </div>
+    <p> <a href="">View attendance reports</a> | Access time @timenow</p>
+   
+
+    <table style="margin-top:20px;">
+        <thead>
+            <tr>    
+                <th>SLOT</th>
+                <th>TIME</th>
+                <th>SUBJECT</th>
+                <th>STUDENT GROUP</th>
+                <th>TAKE ATTENDANCE</th>
+                <th>VIEW ATTENDANCE</th>
+                <th>EDIT ATTENDANCE</th>
+                <th>NOTE</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var schedule in Model)
+            {
+                <tr>
+                    <td>@schedule.TimeSlotId - @schedule.Room</td>
+                    <td>@schedule.StartTime - @schedule.EndTime</td>
+                    <td>@schedule.CourseName</td>
+                    <td><a href="">@schedule.ClassCode</a></td>
+                    <td>
+                        @if (schedule.StartTime > DateTime.Now.TimeOfDay) // So sánh với DateTime.Now
+                        {
+                            <span>NOT YET OPENED</span>
+                        }
+                        else if (schedule.Status == "Future") // Kiểm tra trạng thái "Future"
+                        {
+                            <a href="@Url.Action("EditAttendance", "Attendance", new { scheduleId = schedule.ScheduleId,classId = schedule.ClassId })">Take Attendance</a>
+                        }
+                        else
+                        {
+                            <span><a>Taken</a></span>
+                        }
+                    </td>
+                    <td>
+                        @if (schedule.Status == "Present") // Kiểm tra trạng thái "Future"
+                        {
+                            <a href="@Url.Action("ViewAttendance", "Attendance", new { scheduleId    = schedule.ScheduleId ,classId = schedule.ClassId })">View</a>
+                        }
+                        else
+                        {
+                            <span></span>
+                        }
+                    </td>
+                    <td>
+                        @if (schedule.Status == "Present") // Kiểm tra trạng thái "Future"
+                        {
+                            <a href="@Url.Action("EditAttendance", "Attendance", new { scheduleId = schedule.ScheduleId  ,classId = schedule.ClassId})">Edit</a>
+                        }
+                        else
+                        {
+                            <span></span>
+                        }
+                    </td>
+                   
+                    <td>
+                        @if (schedule.SubstituteTeacherFullName != null) // Kiểm tra trạng thái "Future"
+                        {
+                            <span>@schedule.SubstituteTeacherFullName</span>
+
+                        }
+                        else
+                        {
+                            <span>Không có</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div> <!-- Kết thúc của container-fluid -->
+
+<style>
+    .container-fluid {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    table {
+        width: 100%; /* Đảm bảo bảng chiếm toàn bộ chiều rộng */
+        border-collapse: collapse;
+        table-layout: fixed; /* Cố định kích thước cột */
+        text-align: left;
+        margin: 0; /* Loại bỏ margin để không có khoảng cách hai bên */
+    }
+
+    thead {
+        background-color: #4a79cb;
+        color: white;
+    }
+
+    th, td {
+        padding: 2px;
+        border: 1px solid #ddd;
+    }
+
+    th {
+    }
+
+    tbody tr:nth-child(odd) {
+        background-color: #f9f9f9;
+    }
+
+    tbody tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    tbody tr:hover {
+        background-color: #d1e0f7;
+    }
+
+</style>

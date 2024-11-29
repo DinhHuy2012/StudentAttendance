@@ -8,9 +8,9 @@ namespace BusinessObjects.Models
         public int AttendanceId { get; set; }
         public int? EnrollmentId { get; set; }
         public int? ScheduleId { get; set; }
-        public DateTime Date { get; set; }
+        public DateTime? UpdatedAt { get; set; }
         public string? Status { get; set; }
-        public DateTime RecordedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
         public string? Note { get; set; }
 
         public virtual Enrollment? Enrollment { get; set; }

@@ -1,0 +1,365 @@
+﻿@using BusinessObjects.DTO.AttendanceDTO
+@using BusinessObjects.DTO.ReportDTO
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var teacherId = Context.Session.GetString("TeacherId");
+    var FullName = Context.Session.GetString("FullName");
+    var listCourses = ViewBag.ListCourses as List<CourseClass>; // Ép kiểu cho ViewBag.ListClass
+    var listClass = ViewBag.ListClass as List<CourseClass>; // Ép kiểu cho ViewBag.ListClass
+    var listDateSchedule = ViewBag.ListDateSchedule as List<ViewAllAttendanceStudentDTO>; // Ép kiểu cho ViewBag.ListClass
+    var listStatus = ViewBag.ListStatus as List<ViewAllAttendanceStudentDTO>; // Ép kiểu cho ViewBag.ListClass
+
+}
+<div class="container mt-5">
+    <a class="btn btn-success" href="/Home/Index">Home - <b>Attendance Group </b></a>
+
+    <div class="row">
+        <!-- Cột 4 -->
+        <div class="col-md-12">
+            <h3>Select a semester, subject , class ...</h3>
+            <div class="row">
+                <!-- Add a row here to contain the two tables -->
+                <div class="col-md-4">
+                    <!-- First table: Kỳ học -->
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th style="background-color: #6b90da;">Semester</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var s in ViewBag.Semester)
+                            {
+                                var currentSemesterId = ViewContext.HttpContext.Request.Query["semesterId"].ToString();
+                                var isSelected = currentSemesterId == s.SemesterId.ToString();
+
+                                <tr>
+                                    <td>
+                                        @if (isSelected)
+                                        {
+                                            <b style="text-decoration: underline;">
+                                                @s.SemesterName
+                                            </b>
+                                        }
+                                        else
+                                        {
+                                            <a href="/Report/AttendanceGroup?semesterId=@s.SemesterId">@s.SemesterName</a>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="col-md-4">
+                    <!-- Second table: Môn học -->
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th style="background-color: #6b90da;">Subject</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (listCourses != null)
+                            {
+                                var classSchedules = listCourses;
+
+                                if (classSchedules.Any())
+                                {
+                                    var currentSemesterId = ViewContext.HttpContext.Request.Query["semesterId"].ToString();
+                                    var currentCourseId = ViewContext.HttpContext.Request.Query["courseId"].ToString();
+
+                                    foreach (var classSchedule in classSchedules)
+                                    {
+                                        var isSelected = currentSemesterId == classSchedule.SemesterId.ToString() &&
+                                        currentCourseId == classSchedule.CourseId.ToString();
+
+                                        <tr>
+                                            <td>
+                                                @if (isSelected)
+                                                {
+                                                    <b style="text-decoration: underline;">
+                                                        @classSchedule.CourseName (@classSchedule.CourseCode))
+                                                    </b>
+                                                }
+                                                else
+                                                {
+                                                    <a asp-action="AttendanceGroup"
+                                                       asp-route-semesterId="@classSchedule.SemesterId"
+                                                       asp-route-courseId="@classSchedule.CourseId">
+                                                        @classSchedule.CourseName (@classSchedule.CourseCode)
+                                                    </a>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="1">Không có môn học nào cho kỳ học này.</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="1">Danh sách môn học không khả dụng.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div> <div class="col-md-4">
+                    <!-- Second table: Môn học -->
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th style="background-color: #6b90da;">Group</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (listClass != null)
+                            {
+                                var classSchedules = listClass;
+
+                                if (classSchedules.Any())
+                                {
+
+                                    var currentClassId = ViewContext.HttpContext.Request.Query["classId"].ToString();
+
+                                    foreach (var classSchedule in classSchedules)
+                                    {
+                                        var isSelected = currentClassId == classSchedule.ClassId.ToString();
+
+                                        <tr>
+                                            <td>
+                                                @if (isSelected)
+                                                {
+                                                    <b style="text-decoration: underline;">
+                                                        @classSchedule.ClassCode
+                                                    </b>
+                                                }
+                                                else
+                                                {
+                                                    <a asp-action="AttendanceGroup"
+                                                       asp-route-semesterId="@classSchedule.SemesterId"
+                                                       asp-route-courseId="@classSchedule.CourseId"
+                                                       asp-route-classId="@classSchedule.ClassId">
+                                                        @classSchedule.ClassCode
+                                                    </a>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="1">Không có lớp học nào cho kỳ học này.</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="1">Danh sách lớp học không khả dụng.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr style="border: 1px solid #6b90da; margin-top: 20px; margin-bottom: 20px;" />
+
+</div>
+
+<div class="container mt-5">
+    <div class="row">
+        <!-- Cột 4 -->
+        <div class="col-md-12">
+            <h3>...Then see student list</h3>
+            <table class="table">
+                <thead>
+                 
+                    <tr>
+                        <td style="width:110px;background-color: #6b90da;font-size:14px;padding-bottom:20px" rowspan="2">ROLLNUMBER</td>
+                        <td style="width:140px;background-color: #6b90da;font-size:14px;padding-bottom:20px" rowspan="2">STUDENTNAME</td>
+                        <td style="width:130px;background-color: #6b90da;font-size:14px;padding-bottom:20px" rowspan="2">ABSENT (%)</td>
+                            @foreach (var dateScheudle in listDateSchedule)
+                            {
+                            <td style="max-width: 30px;background-color: #6b90da;font-size: 10px;">@dateScheudle.Date?.ToString("dd/MM")</td>
+
+                            }
+                    </tr>
+
+                    <tr>
+
+                            @foreach (var dateScheudle in listDateSchedule)
+                            {
+                            <td style="max-width: 30px;background-color: #6b90da;font-size: 10px;">@dateScheudle.RowNumber</td>
+
+                            }
+
+                    </tr>
+
+                </thead>
+                <tbody>
+                    @foreach (var s in listStatus.GroupBy(x => new { x.FullName, x.StudentCode, x.DepartmentName }))
+                    {
+                        var totalSessions = s.Count();
+                        var absentSessions = s.Count(x => x.Status == "Absent");
+                        var absentPercentage = (double)absentSessions / totalSessions * 100;
+
+                        <tr>
+                            <td style="width:110px;font-size:12px">
+                                @{
+                                    string departmentName = s.Key.DepartmentName;
+
+                                    string departmentCode = "";
+                                    if (!string.IsNullOrWhiteSpace(departmentName))
+                                    {
+                                        var words = departmentName.Split(' ');
+
+                                        departmentCode += words[0][0];
+
+                                        if (words.Length > 1)
+                                        {
+                                            departmentCode += words[1][0];
+                                        }
+                                    }
+
+                                    @departmentCode @s.Key.StudentCode.ToString("D5")
+                                }
+
+                            </td>
+                            <td style=" width:130px;font-size:13px">@s.Key.FullName</td>
+                       
+                            <td style="width:110px;font-size:13px">@absentPercentage.ToString("F0")%</td>
+
+                            @foreach (var status in s)
+                            {
+                                <td style="width:30px;font-size:13px">
+
+                                    @if (@status.Status == "Future")
+                                    {
+                                        <p style="font-size:13px">-</p>
+
+                                    }
+                                    else if (@status.Status == "Absent")
+                                    {
+                                        <p style="font-size:13px" class="absent">A</p>
+                                    }
+                                    else
+                                    {
+                                        <p style="font-size:13px" class="present">P</p>
+                                    }
+
+
+                                </td>
+
+                            }
+
+                        </tr>
+                    }
+
+
+
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+
+<style>
+
+/* Style the table */
+table.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-family: Arial, sans-serif;
+}
+
+/* Header cells */
+table.table th,
+table.table td {
+    padding: 8px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+/* Style for header cells */
+table.table thead td {
+    background-color: #6b90da;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 10px;
+}
+
+/* Style for main column cells */
+table.table tbody td {
+    font-size: 13px;
+}
+
+/* ROLLNUMBER and STUDENTNAME columns */
+table.table tbody td:first-child {
+    font-weight: bold;
+    color: #333;
+}
+
+/* Absent percentage column */
+table.table tbody td:nth-child(3) {
+    color: #ff6b6b; /* Color to highlight the percentage of absences */
+    font-weight: bold;
+}
+
+/* Date and session columns */
+table.table tbody td p {
+    margin: 0;
+    font-size: 13px;
+}
+
+/* Absent and present styling */
+table.table .absent {
+    color: #ff6b6b;
+    font-weight: bold;
+}
+
+table.table .present {
+    color: #4CAF50;
+    font-weight: bold;
+}
+
+/* Row styling */
+table.table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+table.table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Adjust date headers for better spacing */
+table.table thead td {
+    font-size: 12px;
+    padding: 8px 5px;
+}
+
+/* Row separator lines */
+table.table tbody td {
+    border-bottom: 1px solid #ddd;
+}
+
+/* Responsive adjustments */
+
+}
+
+</style>

@@ -18,7 +18,7 @@ namespace StudentAttendanceAPI.Controllers
 		}
 
 		[HttpPost("LoginByTeacher")]
-		public async Task<IActionResult> LoginByTeacher([FromBody] UserLoginDTO loginDTO)
+		public async Task<IActionResult> LoginByTeacher([FromBody] TeacherLoginDTO loginDTO)
 		{
 			try
 			{
@@ -34,7 +34,7 @@ namespace StudentAttendanceAPI.Controllers
 				return StatusCode(500, ex.Message);
 			}
 		}
-		[HttpPost("LoginByStudent")]
+		[HttpPost("LoginByStudent")]	
 		public async Task<IActionResult> LoginByStudent([FromBody] StudentLoginDTO loginStudentDTO)
 		{
 			try

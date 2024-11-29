@@ -15,7 +15,8 @@ namespace BusinessObjects.Models
         public string ClassCode { get; set; } = null!;
         public string ClassName { get; set; } = null!;
         public string? Note { get; set; }
-
+        public int? SemesterId { get; set; }
+        public virtual Semester? Semester { get; set; }
         public virtual ICollection<Enrollment> Enrollments { get; set; }
         public virtual ICollection<Schedule> Schedules { get; set; }
     }

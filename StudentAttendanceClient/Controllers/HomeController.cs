@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using StudentAttendanceClient.APIFunction;
 using StudentAttendanceClient.Models;
 using System.Diagnostics;
 
@@ -13,8 +14,14 @@ namespace StudentAttendanceClient.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+
+        public async Task<IActionResult> IndexAsync()
         {
+
+          
+            var semesterIdActive = await SemesterAPI.GetSemesterByStatus();
+
+            ViewBag.SemesterIdActive = semesterIdActive.SemesterId;
             return View();
         }
 

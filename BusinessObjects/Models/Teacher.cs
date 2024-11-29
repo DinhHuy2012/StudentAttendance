@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace BusinessObjects.Models
 {
@@ -19,6 +20,7 @@ namespace BusinessObjects.Models
         public string Role { get; set; } = null!;
         public DateTime? CreatedAt { get; set; }
 
+        [JsonIgnore]
         public virtual ICollection<Schedule> Schedules { get; set; }
     }
 }

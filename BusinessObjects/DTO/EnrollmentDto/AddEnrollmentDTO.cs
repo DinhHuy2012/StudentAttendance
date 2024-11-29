@@ -10,7 +10,7 @@ namespace BusinessObjects.DTO.EnrollmentDto
     {
         public int ClassId { get; set; }
         public List<int> StudentIds { get; set; } = new List<int>();
-        public string Status { get; set; }
+        public string? Status { get; set; }
     }
 }
 

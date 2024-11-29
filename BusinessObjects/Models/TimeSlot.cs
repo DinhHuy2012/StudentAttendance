@@ -12,7 +12,7 @@ namespace BusinessObjects.Models
 
         public int TimeSlotId { get; set; }
         public TimeSpan StartTime { get; set; }
-        public TimeSpan Endtime { get; set; }
+        public TimeSpan EndTime { get; set; }
 
         public virtual ICollection<Schedule> Schedules { get; set; }
     }

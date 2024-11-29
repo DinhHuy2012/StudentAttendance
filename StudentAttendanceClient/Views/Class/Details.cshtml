@@ -4,12 +4,74 @@
     var index = 1; // Bắt đầu từ 1
 }
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 <h2>ClassCode: @Model.ClassCode</h2>
-<a asp-controller="Enrollment" asp-action="AddMember" asp-route-id="@Model.ClassId" class="btn btn-info">AddStudents</a>
+<button type="button" class="btn btn-info" id="showFormButtonAdd">Add Students</button>
 <a asp-controller="Enrollment" asp-action="ExportToExcel" asp-route-id="@Model.ClassId" class="btn btn-success">Export to Excel</a>
+
+
+<!-- Nút Import ban đầu -->
+<button type="button" class="btn btn-success" id="showFormButton">Import File Excel</button>
+<a asp-controller="Schedule" asp-action="ScheduleOfClass" asp-route-classId="@Model.ClassId" asp-route-courseId="@ViewBag.FirstCourseId" class="btn btn-danger">View Schedule</a>
+
 <a asp-controller="Class" asp-action="Index" class="btn btn-secondary">Back to List</a>
 
+<!-- Form bị ẩn ban đầu -->
+<div id="importForm" style="display: none;">
+    <form asp-controller="Enrollment" asp-action="ImportFile" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="fileInput">Chọn file Excel:</label>
+            <input type="file" name="file" accept=".xlsx" required />
+        </div>
+        <input type="hidden" id="classId" name="classId" value="@Model.ClassId" />
+        <button type="submit" class="btn btn-success">Import File Excel</button>
+    </form>
+</div>
 
+
+<div id="addForm" style="display: none;">
+
+<form id="enrollmentForm" asp-controller="Enrollment" asp-action="AddMember" method="post">
+    <div class="form-group">
+        <label asp-for="ClassId" class="control-label"></label>
+        <input asp-for="ClassId" class="form-control" value="@Model.ClassId" readonly="readonly" />
+        <span asp-validation-for="ClassId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Select Students</label><br />
+        <select id="studentTags" name="StudentIds" class="form-control" multiple="multiple" style="width: 100%;margin-bottom:20px;"></select>
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Add Students</button>
+    </div>
+</form>
+</div>
+
+<h4 style="color:red">@ViewBag.Message</h4>
+
+<script>
+    document.getElementById('showFormButton').addEventListener('click', function () {
+        // Hiển thị form khi nhấn nút "Import"
+        document.getElementById('importForm').style.display = 'block';
+        // Ẩn nút "Import"
+        document.getElementById('showFormButton').style.display = 'none';
+    });
+</script>
+
+
+
+<script>
+    document.getElementById('showFormButtonAdd').addEventListener('click', function () {
+        // Hiển thị form khi nhấn nút "Import"
+        document.getElementById('addForm').style.display = 'block';
+        // Ẩn nút "Import"
+        document.getElementById('showFormButtonAdd').style.display = 'none';
+    });
+</script>
 <table style="margin-top:20px;">
     <thead>
         <tr>
@@ -77,8 +139,6 @@
 
 
 <style>
-
-
     table {
         width: 100%;
         border-collapse: collapse;
@@ -122,5 +182,42 @@
         background-color: #d1e0f7;
     }
 
-
 </style>
+
+<script>
+    jQuery.noConflict();
+    jQuery(document).ready(function ($) {
+        $('#studentTags').select2({
+            placeholder: 'Search for students',
+            minimumInputLength: 1,
+            ajax: {
+                url: '/Class/SearchStudents',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        search: params.term
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function (item) {
+                            return {
+                                id: item.studentId,
+                                text: item.studentCode.toString().padStart(5, '0') + ' - ' + item.fullName
+                            };
+                        })
+                    };
+                },
+                cache: true,
+                error: function (xhr, status, error) {
+                    console.error('Error fetching students:', status, error);
+                    alert('There was an error searching for students.');
+                }
+            }
+        });
+
+        // Handle form submission
+
+    });
+</script>

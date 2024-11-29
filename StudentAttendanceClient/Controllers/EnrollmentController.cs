@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using StudentAttendanceClient.APIFunction;
-using System.Net.Http;
 using System.Net.Http.Headers;
+using OfficeOpenXml; // Đảm bảo bạn đã thêm thư viện này vào phần đầu của tệp
 
 namespace StudentAttendanceClient.Controllers
 {
@@ -20,28 +20,12 @@ namespace StudentAttendanceClient.Controllers
             this.mapper = mapper;
         }
 
-        public async Task<IActionResult> AddMember(int id)
-        {
-            var classID = await ClassAPI.GetClassByIdAsync(id);
-            if (classID == null)
-            {
-                return NotFound(); // Trả về 404 nếu không tìm thấy sinh viên
-            }
-            ViewBag.Student = classID;
-            return View();
-        }
-            
-        [HttpGet]
-        public async Task<IActionResult> SearchStudents(string search)
-        {
-            // Gọi API bất đồng bộ để tìm sinh viên
-            var students = await StudentAPI.GetSearchStudent(search);
-            return Ok(students);
-        }
+
+    
         public async Task<IActionResult> ExportToExcel(int id)
         {
             // Lấy dữ liệu sinh viên từ ClassDTO dựa trên classId
-            var classDTO = await  ClassAPI.GetClassByIdAsync(id); // Giả sử bạn có service để lấy dữ liệu
+            var classDTO = await ClassAPI.GetClassByIdAsync(id); // Giả sử bạn có service để lấy dữ liệu
 
             // Tạo một file Excel bằng cách sử dụng EPPlus
             using (var package = new ExcelPackage())
@@ -54,7 +38,7 @@ namespace StudentAttendanceClient.Controllers
                 worksheet.Cells[1, 3].Value = "CODE";
                 worksheet.Cells[1, 4].Value = "EMAIL";
                 worksheet.Cells[1, 5].Value = "FULLNAME";
-                worksheet.Cells[1, 6].Value = "DEPARTMENT";
+                worksheet.Cells[1, 6].Value = "ClassId";
 
                 // Thêm dữ liệu sinh viên vào các hàng
                 int row = 2;
@@ -66,7 +50,8 @@ namespace StudentAttendanceClient.Controllers
                     worksheet.Cells[row, 3].Value = student.StudentCode;
                     worksheet.Cells[row, 4].Value = student.Email;
                     worksheet.Cells[row, 5].Value = student.FullName;
-                    worksheet.Cells[row, 6].Value = student.DepartmentName;
+                    worksheet.Cells[row, 6].Value = classDTO.ClassId;
+                    
 
                     row++;
                     index++;
@@ -84,32 +69,33 @@ namespace StudentAttendanceClient.Controllers
         }
 
         [HttpPost]
-        [HttpPost]
         public async Task<IActionResult> AddMember(int classId, List<int> studentIds)
         {
-            if (classId <= 0)
-            {
-                return BadRequest("Invalid class ID.");
-            }
-            if (studentIds == null || !studentIds.Any())
-            {
-                return BadRequest("Student IDs cannot be null or empty.");
-            }
-
+          
+        
             try
-            {
-                Console.WriteLine($"ClassId: {classId}");
-                Console.WriteLine($"StudentIds: {string.Join(", ", studentIds)}");
+            {    Console.WriteLine($"Received Class ID: {classId}, Student IDs Count: {studentIds?.Count ?? 0}");  
 
+
+                // Gọi API để thêm sinh viên vào lớp
                 bool success = await EnrollmentAPI.AddStudentsToClassAsync(classId, studentIds);
 
-                if (!success)
-                {
-                    return StatusCode(500, "Failed to add students to class.");
-                }
+                if (success)
+                {  
+                    await AttendanceAPI.AddAttendanceAsync(classId);
 
-                ViewBag.Message = "Students added successfully.";
-                return View(); // or redirect as necessary
+                    ViewBag.Message = "Students added successfully.";
+                    ViewBag.MessageType = "success"; // hoặc "error" cho lỗi
+                    return RedirectToAction("Details", "Class", new { id = classId }); // Điều hướng đến trang chi tiết lớp học
+                }
+                else
+                {   
+                    // Nếu thất bại, thêm thông báo lỗi
+                    ViewBag.Message = "Failed to add students. Please try again.";
+                    ViewBag.MessageType = "success"; // hoặc "error" cho lỗi
+
+                    return RedirectToAction("Details", "Class", new { id = classId }); // Điều hướng đến trang chi tiết lớp học
+                }
             }
             catch (Exception ex)
             {
@@ -117,6 +103,46 @@ namespace StudentAttendanceClient.Controllers
                 return StatusCode(500, "An error occurred while processing your request.");
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> ImportFile(IFormFile file, int classId)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("No file provided.");
+            }
+
+            // Validate the file type (optional)
+            if (Path.GetExtension(file.FileName).ToLower() != ".xlsx")
+            {
+                return BadRequest("Invalid file type. Please upload an Excel (.xlsx) file.");
+            }
+
+            try
+            {
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial; // Hoặc LicenseContext.Commercial nếu bạn có giấy phép
+
+                // Call the ImportFile method from EnrollmentAPI
+                var result = await EnrollmentAPI.ImportFile(file, classId);
+
+                if (result)
+                {
+
+                    return RedirectToAction("Details", "Class", new { id = classId });
+                }
+                else
+                {
+                    return BadRequest("Failed to import students from the file.");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (use your preferred logging framework)
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
 
     }
 }

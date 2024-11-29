@@ -22,12 +22,12 @@ namespace StudentAttendanceClient.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index( int currentPage = 1, int pageSize = 5)
+        public async Task<IActionResult> Index(int currentPage = 1, int pageSize = 5)
         {
             // Lấy danh sách sinh viên từ API dưới dạng DTO
             var classes = await ClassAPI.GetListClassAsync();
+            
 
-                
             // Tính toán số trang
             var totalClass = classes.Count();
             var totalPages = (int)Math.Ceiling(totalClass / (double)pageSize);
@@ -42,23 +42,40 @@ namespace StudentAttendanceClient.Controllers
             return View(pagedClasses);
         }
 
+     
         public async Task<IActionResult> Details(int id)
         {
             // Lấy thông tin sinh viên từ API
-            var studentDTO = await ClassAPI.GetClassByIdAsync(id); // Đảm bảo bạn đang nhận về đúng kiểu dữ liệu
-
-            if (studentDTO == null)
+            var classdetail = await ClassAPI.GetClassByIdAsync(id); // Đảm bảo bạn đang nhận về đúng kiểu dữ liệu
+            var schedule = await ScheduleAPI.GetScheduleByclassIdAsync(id);
+            var firstCourseId = schedule
+                .Select(c => c.CourseId)
+                .FirstOrDefault();
+            if (classdetail == null)
             {
                 return NotFound(); // Trả về 404 nếu không tìm thấy sinh viên
             }
+            if (firstCourseId == null) {
+                ViewBag.FirstCourseId = 0;
+            }
+
+            ViewBag.FirstCourseId = firstCourseId;
 
             // Ánh xạ từ StudentDTO sang StudentDetailViewModel
-/*            var studentDetail = mapper.Map<Student>(studentDTO);
-*/
+            /*            var studentDetail = mapper.Map<Student>(studentDTO);
+            */
             // Trả về View với thông tin chi tiết sinh viên
-            return View(studentDTO);
+            return View(classdetail);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> SearchStudents(string search)
+        {
+            // Gọi API bất đồng bộ để tìm sinh viên
+            var students = await StudentAPI.GetSearchStudent(search);
+            return Ok(students);
+        }
 
+            
     }
 }

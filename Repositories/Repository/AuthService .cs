@@ -20,7 +20,7 @@ namespace Repositories.Repository
 			_authDao = authDao;
 		}
 
-		public async Task<string> LoginAsync(UserLoginDTO loginDTO)
+		public async Task<string> LoginAsync(TeacherLoginDTO loginDTO)
 		{
 			// Gọi phương thức LoginAsync từ AuthDao và chờ kết quả
 			return await _authDao.LoginAsync(loginDTO);

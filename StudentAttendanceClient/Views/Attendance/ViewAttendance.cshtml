@@ -1,0 +1,176 @@
+﻿@*
+        For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+    *@
+@{
+    int index = 1;
+    var schedule = ViewBag.Schedule;
+    var dayOfWeek = schedule.Date.ToString("dddd", new System.Globalization.CultureInfo("vi-VN"));
+
+}
+ @model List<BusinessObjects.DTO.AttendanceDTO.ViewAttendanceDTO>
+
+
+<a href="/Attendance/TakeAttendance" class="btn btn-danger">Back Take Attendance </a>
+
+<h1>View Attendance - @schedule.ClassCode - @schedule.CourseCode</h1>
+<h5>
+    Attendance for
+    @if (schedule.SubstituteTeacherFullName == null)
+    {
+        <a href="">@schedule.FullName</a>
+
+    }
+    else
+    {
+        <a href="">> @schedule.SubstituteTeacherFullName</a>
+    }
+    at slot @schedule.TimeSlotId on  @dayOfWeek @schedule.Date.ToString("dd/MM/yyyy") at Room @schedule.Room
+</h5>
+<br />
+<h5>This is the session number  @ViewBag.position of the course</h5>
+<table style="margin-top:20px;">
+    <thead>
+        <tr>
+            <th>No</th>
+            <th>Group</th>
+            <th>StudentCode</th>
+            <th>FullName</th>
+            <th>Image</th>
+            <th>Status</th>
+            <th>Comment</th>
+            <th>Record Time</th>
+            <th>Taker</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var s in Model)
+        {
+            <tr>
+
+                <td>@index</td> <!-- Hiển thị giá trị index -->
+                <td>@s.ClassCode</td> <!-- Hiển thị giá trị index -->
+                <td>
+                    @{
+                        // Lấy tên khoa từ đối tượng student
+                        string departmentName = s.DepartmentName;
+
+                        // Xử lý để lấy chữ cái đầu tiên của tên khoa
+                        string departmentCode = "";
+                        if (!string.IsNullOrWhiteSpace(departmentName))
+                        {
+                            // Chia tên khoa thành các từ
+                            var words = departmentName.Split(' ');
+
+                            // Lấy chữ cái đầu tiên của từ đầu tiên
+                            departmentCode += words[0][0];
+
+                            // Nếu có từ thứ hai, lấy chữ cái đầu tiên của từ đó
+                            if (words.Length > 1)
+                            {
+                                departmentCode += words[1][0];
+                            }
+                        }
+
+                        // Chỉ cần hiển thị mã khoa và mã sinh viên
+                        @departmentCode @s.StudentCode.ToString("D5")
+                    }
+                </td>
+
+                <td><a href="/Student/Details/@s.StudentId">@s.FullName</a> </td>
+
+                @if (s.Avatar == null)
+                {
+                    <td>
+                        <img src="~/image/avatar/no-image.jpg" alt="no-image.jpg" style="width: 100px; height: 133px; object-fit: cover;" />
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        <img src="~/image/avatar/@s.Avatar" alt="@s.Avatar" style="width: 100px; height: 133px; object-fit: cover;" />
+                    </td>
+                }
+
+                <td>
+                    @if (s.Status == "Absent")
+                    {
+                        <b style="color:red">Absent</b>
+                    }
+                    else if (s.Status == "Present")
+                    {
+                        <b style="color:green">Present</b>
+                    }
+                    else
+                    {
+                        <b>@s.Status</b>
+                    }
+                </td>
+                <td>
+                    @if (s.Note == null)
+                    {
+                        <span style="color:red"></span>
+                    }
+                    else
+                    {
+                        @s.Note
+                    }
+                </td>
+                <td>
+                    @s.UpdatedAt
+
+                </td>
+                <td>
+                    @if (s.SubstituteTeacherName == null)
+                    {
+                        <span style="color:red">@s.TeacherName</span>
+
+                    }
+                    else
+                    {
+                        <span> @s.SubstituteTeacherName</span>
+                    }
+
+                </td>
+            </tr>
+            index++;
+            <!-- Tăng giá trị index sau mỗi lần lặp -->
+        }
+
+
+    </tbody>
+</table>
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed; /* Cố định kích thước cột */
+        text-align: left;
+    }
+
+    thead {
+        background-color: #4a79cb;
+        color: white;
+    }
+
+    th, td {
+        border: 1px solid #ddd;
+        vertical-align: middle;
+    }
+
+  
+
+
+
+    tbody tr:nth-child(odd) {
+        background-color: #f9f9f9;
+    }
+
+    tbody tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    tbody tr:hover {
+        background-color: #d1e0f7;
+    }
+
+</style>

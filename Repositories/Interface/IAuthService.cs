@@ -10,7 +10,7 @@ namespace Repositories.Interface
 {
     public interface IAuthService
 	{
-		Task<string> LoginAsync(UserLoginDTO loginDTO);
+		Task<string> LoginAsync(TeacherLoginDTO loginDTO);
 		Task<string> LoginByStudentAsync(StudentLoginDTO loginStudentDTO);
 	}
 

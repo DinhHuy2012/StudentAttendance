@@ -1,0 +1,247 @@
+﻿@using BusinessObjects.DTO.ReportDTO
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var studentId = Context.Session.GetString("StudentId");
+    var FullName = Context.Session.GetString("FullName");
+    var StudentCode = Context.Session.GetString("StudentCode");
+
+    var listClass = ViewBag.ListClass as List<ClassSchedule>;
+    var listSchedule = ViewBag.Schedule as List<ClassSchedule>;
+    int absentCount = listSchedule.Count(s => s.AttendanceStatus == "Absent"); // Số buổi vắng
+    int totalCount = listSchedule.Count; // Tổng số buổi
+    // Kiểm tra tổng số buổi không bằng 0 để tránh chia cho 0
+    double absentPercentage = totalCount > 0 ? (double)absentCount / totalCount * 100 : 0;
+
+
+
+}
+
+<div class="container mt-5">
+    <a class="btn btn-success" href="/Home/Index">Home - <b>Attendance report </b></a>
+    <h1>
+        View attendance for @FullName
+    </h1>
+    <div class="row">
+        <!-- Cột 4 -->
+        <div class="col-md-4">
+            <h3>Select a semester, course ...</h3>
+            <div class="row">
+                <!-- Add a row here to contain the two tables -->
+                <div class="col-md-6">
+                    <!-- First table: Kỳ học -->
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th style="background-color: #6b90da;">Kỳ học</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var s in ViewBag.Semester)
+                            {
+                                var currentSemesterId = ViewContext.HttpContext.Request.Query["semesterId"].ToString();
+                                var isSelected = currentSemesterId == s.SemesterId.ToString();
+
+                                <tr>
+                                    <td>
+                                        @if (isSelected)
+                                        {
+                                            <b style="text-decoration: underline;">
+                                                @s.SemesterName
+                                            </b>
+                                        }
+                                        else
+                                        {
+                                            <a href="/Report/AttendStudent?semesterId=@s.SemesterId">@s.SemesterName</a>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="col-md-6">
+                    <!-- Second table: Môn học -->
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th style="background-color: #6b90da;">Môn học</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (listClass != null)
+                            {
+                                var classSchedules = listClass;
+
+                                if (classSchedules.Any())
+                                {
+                                    var currentSemesterId = ViewContext.HttpContext.Request.Query["semesterId"].ToString();
+                                    var currentCourseId = ViewContext.HttpContext.Request.Query["courseId"].ToString();
+
+                                    foreach (var classSchedule in classSchedules)
+                                    {
+                                        var isSelected = currentSemesterId == classSchedule.SemesterID.ToString() &&
+                                        currentCourseId == classSchedule.CourseID.ToString();
+
+                                        <tr>
+                                            <td>
+                                                @if (isSelected)
+                                                {
+                                                    <b style="text-decoration: underline;">
+                                                        @classSchedule.CourseName (@classSchedule.CourseCode - @classSchedule.ClassCode)
+                                                    </b>
+                                                }
+                                                else
+                                                {
+                                                    <a asp-action="AttendStudent"
+                                                       asp-route-semesterId="@classSchedule.SemesterID"
+                                                       asp-route-courseId="@classSchedule.CourseID">
+                                                        @classSchedule.CourseName (@classSchedule.CourseCode - @classSchedule.ClassCode)
+                                                    </a>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="1">Không có môn học nào cho kỳ học này.</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="1">Danh sách môn học không khả dụng.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cột 8 -->
+        <div class="col-md-8">
+            <h3>
+                ... then see report :  <br />                   
+                Absent : @absentPercentage% ABSENT SO FAR (@absentCount ABSENT ON @totalCount Total ) 
+
+            </h3>
+
+            <div class="text-black">
+                @if (ViewBag.CourseId == null)
+                {
+                    <p>Không có lịch học nào</p>
+                }
+                else
+                {
+
+                    <table border="1">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Date</th>
+                                <th>Slot</th>
+                                <th>Room</th>
+                                <th>Lecturer</th>
+                                <th>Class Name</th>
+                                <th>Attendance Status</th>
+                                <th>Lecturer's Comment</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int index = 1;
+                            }
+                            @foreach (var s in listSchedule)
+                            {
+                              @*   var  absentSessions = s.Status?.Count(x => x.Sta == "Absent") ?? 0;
+                                var absentPercentage = totalSessions > 0 ? (double)absentSessions / totalSessions * 100 : 0;
+ *@
+                   
+                                var dayOfWeek = s.Date.ToString("dddd", new System.Globalization.CultureInfo("vi-VN"));
+
+                                // Determine the row class based on the index for alternating colors
+                                string rowClass = (index % 2 == 0) ? "even-row" : "odd-row";
+
+                                <tr class="@rowClass">
+                                    <td>@index</td>
+                                    <td>
+                                        <a style="font-size:12px" class="btn btn-success">
+                                            @dayOfWeek
+                                            @s.Date.ToString("dd/MM/yyyy")
+                                        </a>
+                                    </td>
+                                        <td style="text-align:center">
+                                            <a style="font-size:12px" class="btn btn-danger">@s.TimeSlotID _ (@s.StartTime.ToString(@"hh\:mm")-@s.EndTime.ToString(@"hh\:mm"))</a>
+                                        </td>
+                                    <td>@s.Room</td>
+                                    <td>@s.TeacherName</td>
+                                    <td>@s.ClassCode</td>
+                                    <td><a style="font-size:12px" class="@GetStatusClass(@s.AttendanceStatus)">@s.AttendanceStatus</a></td>
+                                    <td>@s.Note</td>
+                                </tr>
+                                index++;
+                            }
+
+                            @functions {
+                            public string GetStatusClass(string attendanceStatus)
+                            {
+                                return attendanceStatus switch
+                                {
+                                    "Present" => "btn btn-success", // Bootstrap class for success (green)
+                                    "Absent" => "btn btn-danger",   // Bootstrap class for danger (red)
+                                    "Future" => "btn btn-warning",  // Bootstrap class for warning (yellow)
+                                    _ => ""
+                                };
+                            }
+                        }
+                    </tbody>
+
+
+                </table>
+
+
+
+                }
+
+                    
+                    
+
+
+                <style>
+                    .even-row {
+                        background-color: #f2f2f2; /* Light grey for even rows */
+                    }
+
+                    .odd-row {
+                        background-color: #ffffff; /* White for odd rows */
+                    }
+                </style>
+
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    thead th {
+        background-color: #6b90da; /* Màu nền cho tiêu đề */
+        color: black; /* Màu chữ */
+        text-align: center; /* Căn giữa nội dung */
+        padding: 10px; /* Khoảng cách bên trong ô */
+    }
+
+    th, td {
+        padding: 8px;
+        border: 1px solid #ddd;
+    }
+</style>

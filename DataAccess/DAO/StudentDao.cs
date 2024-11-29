@@ -98,7 +98,7 @@ namespace DataAccess.DAO
 
         public async Task<Student> GetStudentByEmailAsync(string email)
         {
-            return await _context.Students
+            return await _context.Students.Include(x => x.Department)
                 .FirstOrDefaultAsync(s => s.Email == email);
         }
 

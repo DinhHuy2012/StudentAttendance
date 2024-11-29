@@ -18,16 +18,15 @@ namespace DataAccess.DAO
 		{
 			_context = context;
 		}
-		public async Task<string> LoginAsync(UserLoginDTO loginDTO)
+		public async Task<string> LoginAsync(TeacherLoginDTO loginDTO)
 		{
-			var user = await _context.Teachers.FirstOrDefaultAsync(u => u.Username == loginDTO.Username);
+			var user = await _context.Teachers.FirstOrDefaultAsync(u => u.Email == loginDTO.Email);
 			if (user == null || !VerifyPasswordHash(loginDTO.Password, user.Password))
 			{
-				throw new UnauthorizedAccessException("Invalid username or password.");
+				throw new UnauthorizedAccessException("Invalid Email or password.");
 			}
 
-			// Tạo JWT hoặc cookie nếu cần
-			return "Token or user information : " + user.Username; // Trả về token hoặc thông tin người dùng
+			return "Token or user information : " + user.Email; // Trả về token hoặc thông tin người dùng
 		}
 		public async Task<string> LoginByStudentAsync(StudentLoginDTO loginStudentDTO)
 		{

@@ -1,0 +1,65 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Trang Đăng Nhập";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card p-4">
+                <h3 class="text-center">Đăng nhập Sinh viên</h3>
+                <form asp-controller="Authentication" asp-action="LoginByStudent" method="post">
+                    <div class="form-group">
+                        <label for="studentId">Email Sinh viên</label>
+                        <input type="email" class="form-control"  name="Email" placeholder="Email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentPassword">Mật khẩu</label>
+                        <input type="password" class="form-control" id="studentPassword" name="Password" placeholder="Nhập mật khẩu" required>
+                    </div>
+                    <button style="margin-top:20px" type="submit" class="btn btn-primary btn-block">Đăng nhập</button>
+                </form>
+                @if (!string.IsNullOrEmpty(ViewBag.Message))
+                {
+                    <div class="alert alert-danger" style="margin-top: 20px;">
+                        @ViewBag.Message
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card p-4">
+                <h3 class="text-center">Đăng nhập Giáo viên và Cán Bộ</h3>
+                <form asp-controller="Authentication" asp-action="LoginByTeacherOrAdmin" method="post">
+                    <div class="form-group">
+                        <label for="username">Tên đăng nhập</label>
+                        <input type="email" class="form-control"  name="Email" placeholder="Nhập Email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Mật khẩu</label>
+                        <input type="password" class="form-control" id="password" name="Password" placeholder="Nhập mật khẩu" required>
+                    </div>
+                    <button style="margin-top:20px"  type="submit" class="btn btn-primary btn-block">Đăng nhập</button>
+                </form>
+                @if (!string.IsNullOrEmpty(ViewBag.MessageTeacher))
+                {
+                    <div class="alert alert-danger" style="margin-top: 20px;">
+                        @ViewBag.MessageTeacher
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+    }
+</style>

@@ -12,7 +12,7 @@ namespace BusinessObjects.Models
 
         public int CourseId { get; set; }
         public string CourseCode { get; set; } = null!;
-        public string CourseName { get; set; } = null!;
+        public string CourseName { get; set; } = null!; 
         public string? Description { get; set; }
         public int? DepartmentId { get; set; }
         public DateTime? CreatedAt { get; set; }

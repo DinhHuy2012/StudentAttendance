@@ -1,5 +1,10 @@
 ﻿@model BusinessObjects.Models.Student
-
+@{
+    var role = Context.Session.GetString("Role");
+    var studentId = Context.Session.GetString("StudentId");
+    var FullName = Context.Session.GetString("FullName");
+    var Role = Context.Session.GetString("Role");
+}
 <h2>Student Details</h2>
 
 <div class="container">
@@ -82,6 +87,13 @@
         </div>
     </div>
 </div>
+@if (role == "admin")
+{
+    <a asp-controller="Student" asp-action="Index" class="btn btn-secondary">Back to List</a>
+}
+@if(role == "teacher")
+{
+    <a asp-controller="Attendance" asp-action="TakeAttendance" class="btn btn-secondary">Back Take Attendance</a>
 
 
-<a asp-controller="Student" asp-action="Index" class="btn btn-secondary">Back to List</a>
+}

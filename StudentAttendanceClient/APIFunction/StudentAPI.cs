@@ -101,6 +101,24 @@ namespace StudentAttendanceClient.APIFunction
             return studentDTO; // Trả về đối tượng sinh viên
         }
 
+        public static async Task<StudentsDTO> GetStudentByEmailAsync(string email)
+        {
+            StudentsDTO studentDTO = null; // Sửa tên biến để thống nhất với convention
+            using (HttpClient client = new HttpClient())
+            {
+                string url = $"http://localhost:5019/api/Student/GetStudentByEmail/{email}";
+
+                HttpResponseMessage response = await client.GetAsync(url); // Sử dụng await để gọi bất đồng bộ
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    studentDTO = await response.Content.ReadFromJsonAsync<StudentsDTO>(); // Sử dụng await ở đây cũng
+                }
+            }
+
+            return studentDTO; // Trả về đối tượng sinh viên
+        }
+
         public static async Task<int> CreateStudentAsync(AddStudentDTO p)
         {
             using (HttpClient client = new HttpClient())

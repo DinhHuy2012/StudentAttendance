@@ -1,0 +1,127 @@
+﻿@{
+    var schedule = ViewBag.Schedule;
+    var dayOfWeek = schedule.Date.ToString("dddd", new System.Globalization.CultureInfo("vi-VN"));
+
+}
+@model List<BusinessObjects.DTO.AttendanceDTO.ViewAttendanceDTO>
+
+<a href="/Attendance/TakeAttendance" class="btn btn-danger">Back Take Attendance</a>
+
+<h1>Change   Attendance - @schedule.ClassCode - @schedule.CourseCode</h1>
+<h5>
+    Attendance for
+    @if (schedule.SubstituteTeacherFullName == null)
+    {
+        <a href="">@schedule.FullName</a>
+    }
+    else
+    {
+        <a href="">@schedule.SubstituteTeacherFullName</a>
+    }
+    at slot @schedule.TimeSlotId on @dayOfWeek @schedule.Date.ToString("dd/MM/yyyy") at Room @schedule.Room
+</h5>
+<br />
+<h5>This is the session number @ViewBag.position of the course</h5>
+
+<form asp-controller="Attendance" asp-action="EditAttendance" method="post">
+    <input type="hidden" name="scheduleId" value="@schedule.ScheduleId" /> <!-- Gán scheduleId -->
+    <input type="hidden" name="classId" value="@schedule.ClassId" /> <!-- Gán classId -->
+
+    <table style="margin-top:20px;">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Student Code</th>
+                <th>Full Name</th>
+                <th>Image</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int index = 0; index < Model.Count; index++)
+            {
+                var s = Model[index];
+                <tr>
+                    <td>@(index + 1)</td>
+                    <td>
+                        @{
+                            string departmentName = s.DepartmentName;
+                            string departmentCode = "";
+                            if (!string.IsNullOrWhiteSpace(departmentName))
+                            {
+                                var words = departmentName.Split(' ');
+                                departmentCode += words[0][0];
+                                if (words.Length > 1)
+                                {
+                                    departmentCode += words[1][0];
+                                }
+                            }
+                            @departmentCode @s.StudentCode.ToString("D5")
+                        }
+                    </td>
+                    <td><a href="/Student/Details/@s.StudentId">@s.FullName</a></td>
+                    <td>
+                        @if (s.Avatar == null)
+                        {
+                            <img src="~/image/avatar/no-image.jpg" alt="no-image.jpg" style="width: 100px; height: 133px; object-fit: cover;" />
+                        }
+                        else
+                        {
+                            <img src="~/image/avatar/@s.Avatar" alt="@s.Avatar" style="width: 100px; height: 133px; object-fit: cover;" />
+                        }
+                    </td>
+                    <td>
+                        <input type="hidden" name="updates[@index].StudentId" value="@s.StudentId" />
+                        <label>
+                            <input type="radio" name="updates[@index].Status" value="Present" @(s.Status == "Present" ? "checked" : "")  required/> Present
+                        </label>
+                        <label>
+                            <input type="radio" name="updates[@index].Status" value="Absent" @(s.Status == "Absent" ? "checked" : "") required/> Absent
+                        </label>
+                        <label>
+                            <input type="text" name="updates[@index].Note" value="@s.Note" placeholder="Note" />
+                        </label>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <button type="submit" class="btn btn-primary" style="margin-top: 20px; margin-left: 650px;">SAVE</button>
+</form>
+
+
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        text-align: left;
+    }
+
+    thead {
+        background-color: #4a79cb;
+        color: white;
+    }
+
+    th, td {
+        padding: 12px;
+        border: 1px solid #ddd;
+        vertical-align: middle;
+    }
+
+    th {
+        width: 25%;
+    }
+
+    tbody tr:nth-child(odd) {
+        background-color: #f9f9f9;
+    }
+
+    tbody tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    tbody tr:hover {
+        background-color: #d1e0f7;
+    }
+</style>

@@ -1,8 +1,81 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Trang Chủ";
+}
+@{
+    var role = Context.Session.GetString("Role");
+    var studentId = Context.Session.GetString("StudentId");
+    var FullName = Context.Session.GetString("FullName");
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+<div class="container mt-5">
+    <div class="jumbotron text-center bg-light p-4">
+        @if (FullName != null)
+        {
+            <h5 class="card-title mt-3">Hello , @FullName</h5>
+
+
+        }
+        @if (studentId != null)
+        {
+
+            <hr class="my-4">
+            <a class="btn btn-primary btn-lg mr-2" href="/Report/ScheduleOfWeek?filterType=thisweek" role="button">Weekly timetable (Thời khóa biểu từng tuần)</a>
+            <a class="btn btn-secondary btn-lg" href="/Report/AttendStudent?semesterId=@ViewBag.SemesterIdActive" role="button">Attendance report(Báo cáo điểm danh) </a>
+        }
+    </div>
+    @if (role == "admin")
+    {
+        <div class="row mt-5">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <img src="~/images/class-management.jpg" class="card-img-top" alt="Quản lý Lớp học" />
+                        <h5 class="card-title mt-3">Quản lý Lớp học</h5>
+                        <p class="card-text">Tạo, sửa và quản lý thông tin các lớp học.</p>
+                        <a href="/Class/Index" class="btn btn-outline-primary">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <img src="~/images/student-management.jpg" class="card-img-top" alt="Quản lý Sinh viên" />
+                        <h5 class="card-title mt-3">Quản lý Sinh viên</h5>
+                        <p class="card-text">Theo dõi và quản lý thông tin sinh viên một cách dễ dàng.</p>
+                        <a href="/Student/Index" class="btn btn-outline-primary">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <img src="~/images/schedule-management.jpg" class="card-img-top" alt="Lịch học" />
+                        <h5 class="card-title mt-3">Lịch học</h5>
+                        <p class="card-text">Quản lý lịch học và thời gian điểm danh của các lớp.</p>
+                        <a href="/Schedules" class="btn btn-outline-primary">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (role == "teacher")
+    {
+
+        <hr class="my-4">
+        <a class="btn btn-primary btn-lg mr-2" href="/Attendance/TakeAttendance" role="button">Take Attendance</a>
+        <a class="btn btn-secondary btn-lg" href="/Report/AttendanceGroup?semesterId=@ViewBag.SemesterIdActive" role="button">Attendance report(Báo cáo điểm danh) </a>
+    }
+
 </div>
+
+<style>
+    .jumbotron {
+        background-color: #f8f9fa;
+    }
+
+    .card {
+        margin-top: 20px;
+    }
+</style>

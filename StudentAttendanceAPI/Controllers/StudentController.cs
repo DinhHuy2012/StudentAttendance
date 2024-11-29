@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Repositories.Interface;
+using System.Data;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -34,6 +35,22 @@ namespace StudentAttendanceAPI.Controllers
 
                 return Ok(result);
 
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        [HttpGet("GetStudentByEmail/{email}")]
+        public async Task<IActionResult> GetStudentByEmail(string email)
+        {
+            try
+            {
+                var students = await _studentRepository.GetStudentByEmailAsync(email);
+                var result = _mapper.Map<StudentsDTO>(students);
+
+                return Ok(result);
+                        
             }
             catch (Exception ex)
             {
@@ -102,20 +119,11 @@ namespace StudentAttendanceAPI.Controllers
             }
         }
 
-        // Hàm phụ để lấy ký tự đầu tiên của từ thứ hai trong tên khoa
-        private string GetSecondCharacter(string departmentName)
-        {
-            int firstSpaceIndex = departmentName.IndexOf(" ");
-            if (firstSpaceIndex != -1 && firstSpaceIndex + 1 < departmentName.Length)
-            {
-                return departmentName.Substring(firstSpaceIndex + 1, 1).ToUpper(); // Lấy chữ cái đầu tiên của từ thứ hai
-            }
-            return "X"; // Hoặc một ký tự mặc định nếu không có từ thứ hai
-        }
+  
 
 
         [HttpPut("UpdateStudent")]
-        public async Task<IActionResult> UpdateStudent( UpdateStudentDTO p)
+        public async Task<IActionResult> UpdateStudent(UpdateStudentDTO p)
         {
             // Lấy sinh viên từ repository
             Student student = await _studentRepository.GetStudentByIdAsync(p.StudentId);

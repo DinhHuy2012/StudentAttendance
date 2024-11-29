@@ -1,0 +1,121 @@
+﻿@model BusinessObjects.DTO.ScheduleDTO.EditScheduleDTO
+
+<div class="container">
+    <h2>Edit Schedule</h2>
+    <form asp-controller="Schedule" asp-action="EditSchedule" method="post">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label asp-for="ScheduleId" class="control-label"></label>
+
+                    <input type="text" asp-for="ScheduleId" class="form-control" readonly />
+                    <span asp-validation-for="ScheduleId" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label asp-for="ClassId" class="control-label"></label>
+
+                    <input type="text" asp-for="ClassId" class="form-control" readonly />
+                    <span asp-validation-for="ClassId" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label asp-for="SubstituteTeacherId" class="control-label"></label>
+
+                    <select asp-for="SubstituteTeacherId" class="form-control">
+                        <option value="">Select SubstituteTeacher</option>
+                        @foreach (var ts in ViewBag.Teacher)
+                        {
+                            <option value="@ts.TeacherId">@ts.FullName - @ts.Email</option>
+
+                        }
+
+                    </select>                   
+                    <span asp-validation-for="SubstituteTeacherId" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="Room" class="control-label"></label>
+                    <input asp-for="Room" class="form-control" type="text" />
+                    <span asp-validation-for="Room" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="TimeSlotId" class="control-label"></label>
+                    <select asp-for="TimeSlotId" class="form-control">
+                        <option value="">Select TimeSlot</option>
+                        @foreach (var ts in ViewBag.TimeSlot)
+                        {
+                            <option value="@ts.TimeSlotId">@ts.StartTime - @ts.EndTime</option>
+
+                        }
+
+                    </select>
+                    <span asp-validation-for="TimeSlotId" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="CourseId" class="control-label"></label>
+                    <select asp-for="CourseId" class="form-control">
+                        <option value="">Select Course</option>
+                        @foreach (var ts in ViewBag.Course)
+                        {
+                            <option value="@ts.CourseId">@ts.CourseName (@ts.CourseCode)</option>
+
+                        }
+
+                    </select>
+                    <span asp-validation-for="CourseId" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="TeacherId" class="control-label"></label>
+                    <select asp-for="TeacherId" class="form-control">
+                        <option value="">Select Teacher</option>
+                        @foreach (var ts in ViewBag.Teacher)
+                        {
+                            <option value="@ts.TeacherId">@ts.FullName - @ts.Email</option>
+
+                        }
+
+                    </select>
+                    <span asp-validation-for="TeacherId" class="text-danger"></span>
+                </div>
+            </div>
+
+
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="Date" class="control-label"></label>
+                    <input asp-for="Date" class="form-control" type="date" />
+                    <span asp-validation-for="Date" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="Status" class="control-label"></label>
+                    <input asp-for="Status" class="form-control" value="Future" />
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group" style="padding-top:50px">
+            <button type="submit" class="btn btn-primary">Edit</button>
+            <a class="btn btn-secondary" onclick="window.history.back(); return false;">Cancel</a>
+        </div>
+        <h4 style="color:red">@ViewBag.Message</h4>
+    </form>
+</div>

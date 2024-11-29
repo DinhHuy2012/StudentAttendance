@@ -44,18 +44,18 @@ namespace BusinessObjects.Models
             {
                 entity.ToTable("Attendance");
 
-                entity.HasIndex(e => new { e.EnrollmentId, e.ScheduleId, e.Date }, "UQ_Attendance")
+                entity.HasIndex(e => new { e.EnrollmentId, e.ScheduleId, e.UpdatedAt }, "UQ_Attendance")
                     .IsUnique();
 
                 entity.Property(e => e.AttendanceId).HasColumnName("AttendanceID");
 
-                entity.Property(e => e.Date).HasColumnType("date");
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.EnrollmentId).HasColumnName("EnrollmentID");
 
                 entity.Property(e => e.Note).HasMaxLength(50);
 
-                entity.Property(e => e.RecordedAt)
+                entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
@@ -77,6 +77,7 @@ namespace BusinessObjects.Models
                     .HasConstraintName("FK__Attendanc__Sched__14270015");
             });
 
+       
             modelBuilder.Entity<Class>(entity =>
             {
                 entity.Property(e => e.ClassId).HasColumnName("ClassID");
@@ -88,6 +89,13 @@ namespace BusinessObjects.Models
                 entity.Property(e => e.Note)
                     .HasMaxLength(50)
                     .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.SemesterId).HasColumnName("SemesterID");
+
+                entity.HasOne(d => d.Semester)
+                    .WithMany(p => p.Classes)
+                    .HasForeignKey(d => d.SemesterId)
+                    .HasConstraintName("FK_Classes_Semesters");
             });
 
             modelBuilder.Entity<Course>(entity =>
@@ -137,7 +145,6 @@ namespace BusinessObjects.Models
 
                 entity.HasIndex(e => e.ClassId, "idx_enrollments_classid");
 
-                entity.HasIndex(e => e.SemesterId, "idx_enrollments_semesterid");
 
                 entity.HasIndex(e => e.StudentId, "idx_enrollments_studentid");
 
@@ -153,7 +160,6 @@ namespace BusinessObjects.Models
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.SemesterId).HasColumnName("SemesterID");
 
                 entity.Property(e => e.Status).HasMaxLength(50);
 
@@ -165,11 +171,7 @@ namespace BusinessObjects.Models
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK__Enrollmen__Class__5DCAEF64");
 
-                entity.HasOne(d => d.Semester)
-                    .WithMany(p => p.Enrollments)
-                    .HasForeignKey(d => d.SemesterId)
-                    .OnDelete(DeleteBehavior.SetNull)
-                    .HasConstraintName("FK__Enrollmen__Semes__5FB337D6");
+      
 
                 entity.HasOne(d => d.Student)
                     .WithMany(p => p.Enrollments)
@@ -190,9 +192,9 @@ namespace BusinessObjects.Models
 
                 entity.Property(e => e.Date).HasColumnType("datetime");
 
-                entity.Property(e => e.DayOfWeek).HasMaxLength(100);
 
                 entity.Property(e => e.Room).HasMaxLength(50);
+                entity.Property(e => e.Status).HasMaxLength(50);
 
                 entity.Property(e => e.TeacherId).HasColumnName("TeacherID");
 
@@ -207,11 +209,15 @@ namespace BusinessObjects.Models
                     .WithMany(p => p.Schedules)
                     .HasForeignKey(d => d.CourseId)
                     .HasConstraintName("FK_Schedules_Courses");
-
                 entity.HasOne(d => d.Teacher)
-                    .WithMany(p => p.Schedules)
+                    .WithMany(p => p.Schedules) // Giáo viên chính
                     .HasForeignKey(d => d.TeacherId)
-                    .HasConstraintName("FK_Schedules_Users");
+                    .HasConstraintName("FK_Schedules_Teachers");
+
+                entity.HasOne(d => d.SubstituteTeacher)
+                    .WithMany() // Không cần navigation property trong Teacher cho giáo viên dạy thay
+                    .HasForeignKey(d => d.SubstituteTeacherId)
+                    .HasConstraintName("FK_Schedules_SubstituteTeachers");
 
                 entity.HasOne(d => d.TimeSlot)
                     .WithMany(p => p.Schedules)
@@ -236,6 +242,8 @@ namespace BusinessObjects.Models
                 entity.Property(e => e.SemesterName).HasMaxLength(50);
 
                 entity.Property(e => e.StartDate).HasColumnType("date");
+                entity.Property(e => e.Status).HasMaxLength(50);
+
             });
 
             modelBuilder.Entity<Student>(entity =>
